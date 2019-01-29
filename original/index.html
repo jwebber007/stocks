@@ -28,7 +28,7 @@
         width: 12%;
         padding: 2px 4px 2px 0px;
       }
-      .stock-price, .stock-change, .stock-change-pct, .stock-mkt-cap,.stock-volume,.stock-52high,.stock-52low,.stock-avVol,.stock-mineQuantity,.stock-minePrice,.stock-mineCost,.stock-minePLPercent {
+      .stock-price, .stock-change, .stock-change-pct, .stock-mkt-cap {
         width: 22%;
         text-align: right;
         padding: 2px 4px;
@@ -62,7 +62,7 @@
 
     <script>
       'use strict';
-/*
+
       const DEFAULT_PORTFOLIOS = [
         {'name': 'Market ETFs', 'symbols': ['SPY', 'DIA', 'QQQ', 'IWM']},
         {'name': 'Sector ETFs', 'symbols': ['XLF', 'XLK', 'XLC', 'XLV', 'XLP', 'XLY', 'XLE', 'XLB', 'XLI', 'XLU', 'XLRE']},
@@ -76,10 +76,7 @@
         {'name': 'Airlines', 'symbols': ['DAL', 'LUV', 'UAL', 'AAL', 'ALK', 'JBLU', 'SAVE']},
         {'name': 'BigCos', 'symbols': ['XOM', 'WMT', 'JNJ', 'GE', 'T', 'KO', 'DIS', 'MCD', 'PG']}
       ];
-*/
-      const DEFAULT_PORTFOLIOS = [
-        {'name': 'Mines', 'symbols': ['BABA', 'TGT', 'AAPL', 'GE','WDFC','SEDG']}
-      ];
+
       const PORTFOLIOS = portfoliosFromQueryParams() || DEFAULT_PORTFOLIOS;
       const REFRESH_SECONDS = 10;
       const BATCH_SIZE = 100;
@@ -96,41 +93,6 @@
       updateData('addTitle');
       setInterval(updateData, REFRESH_SECONDS * 1000);
 
-      var mine = [
-        {'name': 'AAPL', 'price': 177.40,'quanity':96},
-        {'name': 'BABA', 'price': 182.36,'quanity':110},
-        {'name': 'TGT', 'price': 68.58,'quanity':63},
-        {'name': 'GE', 'price': 7.34,'quanity':37},
-        {'name': 'WDFC', 'price': 162.82,'quanity':109},
-        {'name': 'SEDG', 'price': 32.09,'quanity':3}
-      ];
-
-      function getIndexMine(symbol) {
-      let val = symbol
-      let index = mine.findIndex(function(item, i){
-        return item.name === val
-      });
-      return index
-      }
-
-      function getPriceMine(index) {
-      let val = index
-      let x = 0
-      if (val > -1 ) {
-      x = mine[val].price
-      }
-      return x
-      }
-
-      function getQuantityMine(index) {
-      let val = index
-      let x = 0
-      if (val > -1 ) {
-      x = mine[val].quanity
-      } 
-      return x
-      }
-
       function addPortfolio(portfolio, includeHeader) {
         let tableHeaderHtml = '';
         if (includeHeader) {
@@ -142,16 +104,6 @@
                 <th class="stock-change">Change</th>
                 <th class="stock-change-pct">Change%</th>
                 <th class="stock-mkt-cap">Mkt Cap</th>
-                <th class="stock-volume">Volume</th>
-                <th class="stock-volume">Avg Volume</th>
-                <th class="stock-volume">52 High</th>
-                <th class="stock-volume">52 Low</th>
-                <th class="stock-volume">Quantity</th>
-                <th class="stock-volume">Price</th>
-                <th class="stock-volume">Value</th>
-                <th class="stock-volume">Cost</th>
-                <th class="stock-volume">P-L</th>
-                <th class="stock-volume">P-L%</th>
               </tr>
             </thead>
           `
@@ -168,16 +120,6 @@
               <td class="stock-change"></td>
               <td class="stock-change-pct"></td>
               <td class="stock-mkt-cap"></td>
-              <td class="stock-volume"></td>
-              <td class="stock-avVol"></td>
-              <td class="stock-52high"></td>
-              <td class="stock-52low"></td>
-              <td class="stock-mineQuantity"></td>
-              <td class="stock-minePrice"></td>
-              <td class="stock-mineTotal"></td>
-              <td class="stock-mineCost"></td>
-              <td class="stock-minePL"></td>
-              <td class="stock-minePLPercent"></td>
             </tr>
           `
 
@@ -208,7 +150,7 @@
       }
 
       function updateDataForBatch(symbols, addTitle) {
-        let filters = ['latestPrice', 'change', 'changePercent', 'marketCap','latestVolume','week52High','week52Low','avgTotalVolume'];
+        let filters = ['latestPrice', 'change', 'changePercent', 'marketCap'];
         if (addTitle) filters.push('companyName');
         let url = `${BASE_URL}?types=quote&symbols=${symbols.join(',')}&filter=${filters.join(',')}`;
 
@@ -223,17 +165,6 @@
             let formattedMarketCap = formatMarketCap(data.quote.marketCap);
             let rgbColor = data.quote.changePercent > 0 ? '0,255,0' : '255,0,0';
             let rgbOpacity = Math.min(Math.abs(data.quote.changePercent) * 20, 1);
-            
-            let PL = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)-
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
-            let PLPercent = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)/
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol))
-                  );
-
-            let rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
-            let rgbOpacityMine = .5;
-            let formattedPLPercent = ((PLPercent * 100) - 100) .toFixed(2) + '%';
-
 
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-price`).forEach(e => {
               e.innerHTML = formattedPrice;
@@ -255,46 +186,6 @@
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
 
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-volume`).forEach(e => {
-              e.innerHTML = data.quote.latestVolume;
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-52high`).forEach(e => {
-              e.innerHTML = formatQuote(data.quote.week52High);
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-52low`).forEach(e => {
-              e.innerHTML = formatQuote(data.quote.week52Low);
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-avVol`).forEach(e => {
-              e.innerHTML = data.quote.avgTotalVolume;
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineQuantity`).forEach(e => {
-              e.innerHTML = getQuantityMine(getIndexMine(symbol));
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePrice`).forEach(e => {
-              e.innerHTML = formatQuote(getPriceMine(getIndexMine(symbol)));
-              e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineTotal`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice);
-              e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineCost`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
-              e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePL`).forEach(e => {
-              e.innerHTML = formatQuote(PL);
-              e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
-            });
-            document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePLPercent`).forEach(e => {
-              e.innerHTML = formattedPLPercent;
-              e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
-            });
             if (addTitle) {
               document.querySelectorAll(`[data-symbol="${symbol}"] .stock-symbol a`).forEach(e => {
                 e.setAttribute('title', data.quote.companyName);
@@ -302,7 +193,7 @@
             }
 
             if (symbol === FAVICON_SYMBOL) {
-              updateFavicon(data.quote);  
+              updateFavicon(data.quote);
             }
           });
         });
