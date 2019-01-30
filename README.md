@@ -1,3 +1,4 @@
+
 # Stocks!
 
 A free, lightweight, blazing-fast static page to get stock quotes using the [IEX API](https://iextrading.com/developer/). Stocks can be grouped into user-defined portfolios. Quotes update every 10 seconds. No API key required. Everything is contained within index.html, there are no external javascripts or stylesheets to load.
@@ -26,6 +27,16 @@ const DEFAULT_PORTFOLIOS = [
   {'name': 'Tech', 'symbols': ['AAPL', 'GOOGL', 'MSFT', 'AMZN']}
 ];
 ```
+
+## Track your own stocks
+
+Edit the `mine` variable within `index.html`. For example:
+```js
+      var mine = [
+        {'name': 'AAPL', 'price': 177.40,'quanity':96},
+        {'name': 'BABA', 'price': 182.36,'quanity':110}
+      ];
+ ```
 
 ## Host your own
 
