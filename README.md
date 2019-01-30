@@ -3,7 +3,7 @@
 
 A free, lightweight, blazing-fast static page to get stock quotes using the [IEX API](https://iextrading.com/developer/). Stocks can be grouped into user-defined portfolios. Quotes update every 10 seconds. No API key required. Everything is contained within index.html, there are no external javascripts or stylesheets to load.
 
-This fork adds basic persoanl stock tracking. See the Track your own stocks section below.
+This fork adds basic personal stock tracking. See the Track your own stocks section below.
 
 See here for a live demo: https://toddwschneider.com/stocks/
 
