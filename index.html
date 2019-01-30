@@ -62,8 +62,9 @@
 
     <script>
       'use strict';
-/*
+
       const DEFAULT_PORTFOLIOS = [
+        {'name': 'Mine', 'symbols': ['BABA', 'TGT', 'AAPL', 'GE','WDFC','SEDG']},
         {'name': 'Market ETFs', 'symbols': ['SPY', 'DIA', 'QQQ', 'IWM']},
         {'name': 'Sector ETFs', 'symbols': ['XLF', 'XLK', 'XLC', 'XLV', 'XLP', 'XLY', 'XLE', 'XLB', 'XLI', 'XLU', 'XLRE']},
         {'name': 'Banks', 'symbols': ['GS', 'MS', 'JPM', 'WFC', 'C', 'BAC', 'BCS', 'DB', 'CS', 'RBS']},
@@ -76,10 +77,7 @@
         {'name': 'Airlines', 'symbols': ['DAL', 'LUV', 'UAL', 'AAL', 'ALK', 'JBLU', 'SAVE']},
         {'name': 'BigCos', 'symbols': ['XOM', 'WMT', 'JNJ', 'GE', 'T', 'KO', 'DIS', 'MCD', 'PG']}
       ];
-*/
-      const DEFAULT_PORTFOLIOS = [
-        {'name': 'Mines', 'symbols': ['BABA', 'TGT', 'AAPL', 'GE','WDFC','SEDG']}
-      ];
+
       const PORTFOLIOS = portfoliosFromQueryParams() || DEFAULT_PORTFOLIOS;
       const REFRESH_SECONDS = 10;
       const BATCH_SIZE = 100;
@@ -102,7 +100,7 @@
         {'name': 'TGT', 'price': 68.58,'quanity':63},
         {'name': 'GE', 'price': 7.34,'quanity':37},
         {'name': 'WDFC', 'price': 162.82,'quanity':109},
-        {'name': 'SEDG', 'price': 32.09,'quanity':3}
+        {'name': 'SEDG', 'price': 32.09,'quanity':35}
       ];
 
       function getIndexMine(symbol) {
@@ -331,6 +329,7 @@
           'style': 'currency',
           'currency': 'USD'
         };
+        value = value || 0;
         return value.toLocaleString('en', options);
       }
 
