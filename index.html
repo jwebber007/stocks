@@ -222,11 +222,13 @@
             let rgbColor = data.quote.changePercent > 0 ? '0,255,0' : '255,0,0';
             let rgbOpacity = Math.min(Math.abs(data.quote.changePercent) * 20, 1);
             
-            let PL = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)-
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
-            let PLPercent = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)/
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol))
-                  );
+            let mineIndex = getIndexMine(symbol);
+            let minePrice = getPriceMine(mineIndex);
+            let mineQuantity = getQuantityMine(mineIndex);
+            let PL = (mineQuantity * data.quote.latestPrice)-
+                (mineQuantity * minePrice);
+            let PLPercent = (mineQuantity * data.quote.latestPrice)/
+                (mineQuantity * minePrice);
 
             let rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
             let rgbOpacityMine = .5;
@@ -270,19 +272,19 @@
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineQuantity`).forEach(e => {
-              e.innerHTML = getQuantityMine(getIndexMine(symbol));
+              e.innerHTML = mineQuantity;
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePrice`).forEach(e => {
-              e.innerHTML = formatQuote(getPriceMine(getIndexMine(symbol)));
+              e.innerHTML = formatQuote(minePrice);
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineTotal`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice);
+              e.innerHTML = formatQuote(mineQuantity * data.quote.latestPrice);
               e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineCost`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
+              e.innerHTML = formatQuote(mineQuantity * minePrice);
               e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePL`).forEach(e => {
@@ -360,6 +362,12 @@
 
         if (favicon.getAttribute('href') !== href) {
           favicon.setAttribute('href', href);
+        }
+      }
+    </script>
+  </body>
+</html>
+', href);
         }
       }
     </script>
