@@ -16,7 +16,7 @@
       .stocks-container {
         margin-bottom: 1.5em;
         width: 100%;
-        max-width: 600px;
+        /*max-width: 600px;*/
       }
       .stocks-container a { text-decoration: none; }
       table {
@@ -25,19 +25,19 @@
         font-size: 1.1em;
       }
       .stock-symbol {
-        width: 12%;
+       /* width: 12%;*/
         padding: 2px 4px 2px 0px;
       }
       .stock-price, .stock-change, .stock-change-pct, .stock-mkt-cap,.stock-volume,.stock-52high,.stock-52low,.stock-avVol,.stock-mineQuantity,.stock-minePrice,.stock-mineCost,.stock-minePLPercent {
-        width: 22%;
+        /*width: 22%;*/
         text-align: right;
         padding: 2px 4px;
       }
       @media (max-width: 576px) {
         table { margin-bottom: 3em; }
         .stock-mkt-cap { display: none; }
-        .stock-symbol { width: 16%; }
-        .stock-price, .stock-change, .stock-change-pct { width: 28%; }
+       /* .stock-symbol { width: 16%; }
+        .stock-price, .stock-change, .stock-change-pct { width: 28%; }*/
         td.stock-symbol, td.stock-price, td.stock-change, td.stock-change-pct {
           padding-top: 1em;
           padding-bottom: 1em;
@@ -58,7 +58,7 @@
 
     <p class="updated-timestamp"></p>
 
-    <p>Customize <a href="https://github.com/toddwschneider/stocks" target="_blank">on GitHub</a></p>
+    <p>Customize <a href="https://github.com/jwebber007/stocks" target="_blank">on GitHub</a></p>
 
     <script>
       'use strict';
@@ -78,6 +78,15 @@
         {'name': 'BigCos', 'symbols': ['XOM', 'WMT', 'JNJ', 'GE', 'T', 'KO', 'DIS', 'MCD', 'PG']}
       ];
 
+      const mine = [
+        {'name': 'AAPL', 'price': 177.40,'quanity':96},
+        {'name': 'BABA', 'price': 182.36,'quanity':110},
+        {'name': 'TGT', 'price': 68.58,'quanity':63},
+        {'name': 'GE', 'price': 7.34,'quanity':37},
+        {'name': 'WDFC', 'price': 162.82,'quanity':109},
+        {'name': 'SEDG', 'price': 32.09,'quanity':35}
+      ];
+
       const PORTFOLIOS = portfoliosFromQueryParams() || DEFAULT_PORTFOLIOS;
       const REFRESH_SECONDS = 10;
       const BATCH_SIZE = 100;
@@ -89,26 +98,17 @@
       let containerDiv = document.querySelector('.stocks-container');
       let updatedDiv = document.querySelector('.updated-timestamp');
 
-      PORTFOLIOS.forEach((p, i) => addPortfolio(p, i === 0));
+      PORTFOLIOS.forEach((p, i) => addPortfolio(p, 1));
       symbols = symbols.filter((s, i) => symbols.indexOf(s) === i);
       updateData('addTitle');
       setInterval(updateData, REFRESH_SECONDS * 1000);
 
-      var mine = [
-        {'name': 'AAPL', 'price': 177.40,'quanity':96},
-        {'name': 'BABA', 'price': 182.36,'quanity':110},
-        {'name': 'TGT', 'price': 68.58,'quanity':63},
-        {'name': 'GE', 'price': 7.34,'quanity':37},
-        {'name': 'WDFC', 'price': 162.82,'quanity':109},
-        {'name': 'SEDG', 'price': 32.09,'quanity':35}
-      ];
-
       function getIndexMine(symbol) {
       let val = symbol
-      let index = mine.findIndex(function(item, i){
+      let x = mine.findIndex(function(item, i){
         return item.name === val
       });
-      return index
+      return x
       }
 
       function getPriceMine(index) {
@@ -222,17 +222,29 @@
             let rgbColor = data.quote.changePercent > 0 ? '0,255,0' : '255,0,0';
             let rgbOpacity = Math.min(Math.abs(data.quote.changePercent) * 20, 1);
             
+            // Set defaults for mine variables
+            let minePrice = 0;
+            let mineQuantity = 0;
+            let PL = 0;
+            let PLPercent = 0;
+            let rgbColorMine = '255,255,255';
+            let rgbOpacityMine = 1;
+            let formattedPLPercent = '0' + '%';
+            // check symbol to see if its mine
             let mineIndex = getIndexMine(symbol);
-            let minePrice = getPriceMine(mineIndex);
-            let mineQuantity = getQuantityMine(mineIndex);
-            let PL = (mineQuantity * data.quote.latestPrice)-
-                (mineQuantity * minePrice);
-            let PLPercent = (mineQuantity * data.quote.latestPrice)/
-                (mineQuantity * minePrice);
+            // if symbol is mine update variables
+            if (mineIndex > -1 ) {
+                minePrice = getPriceMine(mineIndex);
+                mineQuantity = getQuantityMine(mineIndex);
+                PL = (mineQuantity * data.quote.latestPrice)-
+                    (mineQuantity * minePrice);
+                PLPercent = (mineQuantity * data.quote.latestPrice)/
+                    (mineQuantity * minePrice);
 
-            let rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
-            let rgbOpacityMine = .5;
-            let formattedPLPercent = ((PLPercent * 100) - 100) .toFixed(2) + '%';
+                rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
+                rgbOpacityMine = .5;
+                formattedPLPercent = ((PLPercent * 100) - 100) .toFixed(2) + '%';
+              } 
 
 
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-price`).forEach(e => {
@@ -363,6 +375,7 @@
         if (favicon.getAttribute('href') !== href) {
           favicon.setAttribute('href', href);
         }
+
       }
     </script>
   </body>
