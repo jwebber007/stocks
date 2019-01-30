@@ -30,6 +30,8 @@ const DEFAULT_PORTFOLIOS = [
 
 ## Track your own stocks
 
+https://drive.google.com/file/d/1Z1K5TrnfMZv2ZXsURiXbg1UZeJLWJgGO/view?usp=sharing
+
 Edit the `mine` variable within `index.html`. For example:
 ```js
       var mine = [
