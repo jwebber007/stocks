@@ -16,7 +16,7 @@
       .stocks-container {
         margin-bottom: 1.5em;
         width: 100%;
-        max-width: 600px;
+        /*max-width: 600px;*/
       }
       .stocks-container a { text-decoration: none; }
       table {
@@ -25,19 +25,19 @@
         font-size: 1.1em;
       }
       .stock-symbol {
-        width: 12%;
+       /* width: 12%;*/
         padding: 2px 4px 2px 0px;
       }
       .stock-price, .stock-change, .stock-change-pct, .stock-mkt-cap,.stock-volume,.stock-52high,.stock-52low,.stock-avVol,.stock-mineQuantity,.stock-minePrice,.stock-mineCost,.stock-minePLPercent {
-        width: 22%;
+        /*width: 22%;*/
         text-align: right;
         padding: 2px 4px;
       }
       @media (max-width: 576px) {
         table { margin-bottom: 3em; }
         .stock-mkt-cap { display: none; }
-        .stock-symbol { width: 16%; }
-        .stock-price, .stock-change, .stock-change-pct { width: 28%; }
+       /* .stock-symbol { width: 16%; }
+        .stock-price, .stock-change, .stock-change-pct { width: 28%; }*/
         td.stock-symbol, td.stock-price, td.stock-change, td.stock-change-pct {
           padding-top: 1em;
           padding-bottom: 1em;
@@ -49,8 +49,6 @@
   </head>
 
   <body>
-  <div class="refresh"><button type="button" name="refreshDataButton" id="refreshDataButton">Refresh</button>
-  </div>
     <div class="stocks-container"></div>
 
     <p class="attribution">
@@ -60,12 +58,13 @@
 
     <p class="updated-timestamp"></p>
 
-    <p>Customize <a href="https://github.com/toddwschneider/stocks" target="_blank">on GitHub</a></p>
+    <p>Customize <a href="https://github.com/jwebber007/stocks" target="_blank">on GitHub</a></p>
 
     <script>
       'use strict';
-/*
+
       const DEFAULT_PORTFOLIOS = [
+        {'name': 'Mine', 'symbols': ['BABA', 'TGT', 'AAPL', 'GE','WDFC','SEDG']},
         {'name': 'Market ETFs', 'symbols': ['SPY', 'DIA', 'QQQ', 'IWM']},
         {'name': 'Sector ETFs', 'symbols': ['XLF', 'XLK', 'XLC', 'XLV', 'XLP', 'XLY', 'XLE', 'XLB', 'XLI', 'XLU', 'XLRE']},
         {'name': 'Banks', 'symbols': ['GS', 'MS', 'JPM', 'WFC', 'C', 'BAC', 'BCS', 'DB', 'CS', 'RBS']},
@@ -78,18 +77,20 @@
         {'name': 'Airlines', 'symbols': ['DAL', 'LUV', 'UAL', 'AAL', 'ALK', 'JBLU', 'SAVE']},
         {'name': 'BigCos', 'symbols': ['XOM', 'WMT', 'JNJ', 'GE', 'T', 'KO', 'DIS', 'MCD', 'PG']}
       ];
-*/
-      const DEFAULT_PORTFOLIOS = [
-        {'name': '***', 'symbols': ['BABA', 'TGT', 'AAPL', 'GE','WDFC','SEDG','WM']}
+
+      const mine = [
+        {'name': 'AAPL', 'price': 177.40,'quanity':96},
+        {'name': 'BABA', 'price': 182.36,'quanity':110},
+        {'name': 'TGT', 'price': 68.58,'quanity':63},
+        {'name': 'GE', 'price': 7.34,'quanity':37},
+        {'name': 'WDFC', 'price': 162.82,'quanity':109},
+        {'name': 'SEDG', 'price': 32.09,'quanity':35}
       ];
+
       const PORTFOLIOS = portfoliosFromQueryParams() || DEFAULT_PORTFOLIOS;
       const REFRESH_SECONDS = 10;
       const BATCH_SIZE = 100;
-	  
-    //const BASE_URL = 'https://api.iextrading.com/1.0/stock/market/batch'; // old bas URL
-	  const BASE_URL = 'https://cloud.iexapis.com/v1/stock/market/batch';
-    const IEX_API_TOKEN = 'CHANGE_ME'; // set this with your API key on /iexcloud.io
-      
+      const BASE_URL = 'https://api.iextrading.com/1.0/stock/market/batch';
       const FAVICON_SYMBOL = 'SPY';
       const FAVICON_BASE_URL = 'https://d3v3cbxkdlyonc.cloudfront.net/stocks';
 
@@ -97,31 +98,17 @@
       let containerDiv = document.querySelector('.stocks-container');
       let updatedDiv = document.querySelector('.updated-timestamp');
 
-      PORTFOLIOS.forEach((p, i) => addPortfolio(p, i === 0));
+      PORTFOLIOS.forEach((p, i) => addPortfolio(p, 1));
       symbols = symbols.filter((s, i) => symbols.indexOf(s) === i);
       updateData('addTitle');
-	  document.getElementById("refreshDataButton").addEventListener("click", function(){
-		
-			updateData('addTitle');
-		});
-      //setInterval(updateData, REFRESH_SECONDS * 1000); // disabled now that API calls are limited
-
-      var mine = [
-        {'name': 'AAPL', 'price': 177.40,'quanity':9},
-        {'name': 'BABA', 'price': 182.36,'quanity':10},
-        {'name': 'TGT', 'price': 68.58,'quanity':33},
-        {'name': 'GE', 'price': 11.90,'quanity':52},
-        {'name': 'WDFC', 'price': 0,'quanity':0},
-        {'name': 'SEDG', 'price': 46.09,'quanity':3},
-		    {'name': 'WM', 'price': 114,'quanity':12}
-      ];
+      setInterval(updateData, REFRESH_SECONDS * 1000);
 
       function getIndexMine(symbol) {
       let val = symbol
-      let index = mine.findIndex(function(item, i){
+      let x = mine.findIndex(function(item, i){
         return item.name === val
       });
-      return index
+      return x
       }
 
       function getPriceMine(index) {
@@ -154,15 +141,15 @@
                 <th class="stock-change-pct">Change%</th>
                 <th class="stock-mkt-cap">Mkt Cap</th>
                 <th class="stock-volume">Volume</th>
-                <th class="stock-volume">Avg Volume</th>
-                <th class="stock-volume">52 High</th>
-                <th class="stock-volume">52 Low</th>
-                <th class="stock-volume">Quantity</th>
-                <th class="stock-volume">Price</th>
-                <th class="stock-volume">Value</th>
-                <th class="stock-volume">Cost</th>
-                <th class="stock-volume">P-L</th>
-                <th class="stock-volume">P-L%</th>
+                <th class="stock-avVol">Avg Volume</th>
+                <th class="stock-52high">52 High</th>
+                <th class="stock-52low">52 Low</th>
+                <th class="stock-mineQuantity">Quantity</th>
+                <th class="stock-minePrice">Price</th>
+                <th class="stock-mineTotal">Value</th>
+                <th class="stock-mineCost">Cost</th>
+                <th class="stock-minePL">P-L</th>
+                <th class="stock-minePLPercent">P-L%</th>
               </tr>
             </thead>
           `
@@ -221,7 +208,7 @@
       function updateDataForBatch(symbols, addTitle) {
         let filters = ['latestPrice', 'change', 'changePercent', 'marketCap','latestVolume','week52High','week52Low','avgTotalVolume'];
         if (addTitle) filters.push('companyName');
-        let url = `${BASE_URL}?types=quote&token=${IEX_API_TOKEN}&symbols=${symbols.join(',')}&filter=${filters.join(',')}`;   
+        let url = `${BASE_URL}?types=quote&symbols=${symbols.join(',')}&filter=${filters.join(',')}`;
 
         fetch(url).then(response => response.json()).then(json => {
           symbols.forEach(symbol => {
@@ -235,15 +222,29 @@
             let rgbColor = data.quote.changePercent > 0 ? '0,255,0' : '255,0,0';
             let rgbOpacity = Math.min(Math.abs(data.quote.changePercent) * 20, 1);
             
-            let PL = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)-
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
-            let PLPercent = (getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice)/
-                (getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol))
-                  );
+            // Set defaults for mine variables
+            let minePrice = 0;
+            let mineQuantity = 0;
+            let PL = 0;
+            let PLPercent = 0;
+            let rgbColorMine = '255,255,255';
+            let rgbOpacityMine = 1;
+            let formattedPLPercent = '0' + '%';
+            // check symbol to see if its mine
+            let mineIndex = getIndexMine(symbol);
+            // if symbol is mine update variables
+            if (mineIndex > -1 ) {
+                minePrice = getPriceMine(mineIndex);
+                mineQuantity = getQuantityMine(mineIndex);
+                PL = (mineQuantity * data.quote.latestPrice)-
+                    (mineQuantity * minePrice);
+                PLPercent = (mineQuantity * data.quote.latestPrice)/
+                    (mineQuantity * minePrice);
 
-            let rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
-            let rgbOpacityMine = .5;
-            let formattedPLPercent = ((PLPercent * 100) - 100) .toFixed(2) + '%';
+                rgbColorMine = PL > 0 ? '0,255,0' : '255,0,0';
+                rgbOpacityMine = .5;
+                formattedPLPercent = ((PLPercent * 100) - 100) .toFixed(2) + '%';
+              } 
 
 
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-price`).forEach(e => {
@@ -283,19 +284,19 @@
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineQuantity`).forEach(e => {
-              e.innerHTML = getQuantityMine(getIndexMine(symbol));
+              e.innerHTML = mineQuantity;
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePrice`).forEach(e => {
-              e.innerHTML = formatQuote(getPriceMine(getIndexMine(symbol)));
+              e.innerHTML = formatQuote(minePrice);
               e.setAttribute('style', `background-color: rgba(${rgbColor}, ${rgbOpacity})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineTotal`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * data.quote.latestPrice);
+              e.innerHTML = formatQuote(mineQuantity * data.quote.latestPrice);
               e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-mineCost`).forEach(e => {
-              e.innerHTML = formatQuote(getQuantityMine(getIndexMine(symbol)) * getPriceMine(getIndexMine(symbol)));
+              e.innerHTML = formatQuote(mineQuantity * minePrice);
               e.setAttribute('style', `background-color: rgba(${rgbColorMine}, ${rgbOpacityMine})`);
             });
             document.querySelectorAll(`[data-symbol="${symbol}"] .stock-minePL`).forEach(e => {
@@ -342,6 +343,7 @@
           'style': 'currency',
           'currency': 'USD'
         };
+        value = value || 0;
         return value.toLocaleString('en', options);
       }
 
@@ -373,6 +375,7 @@
         if (favicon.getAttribute('href') !== href) {
           favicon.setAttribute('href', href);
         }
+
       }
     </script>
   </body>
